@@ -41,6 +41,7 @@ export async function command(params: {
     buildContext: BuildContext;
     cliCommandOptions: {
         port: number | undefined;
+        containerPort: number | undefined;
         keycloakVersion: string | undefined;
         realmJsonFilePath: string | undefined;
     };
@@ -448,6 +449,10 @@ export async function command(params: {
     } catch {}
 
     const port = cliCommandOptions.port ?? buildContext.startKeycloakOptions.port ?? 8080;
+    const containerPort =
+        cliCommandOptions.containerPort ??
+        buildContext.startKeycloakOptions.containerPort ??
+        8080;
 
     const doStartDevServer = (() => {
         const hasSpaUi =
@@ -501,7 +506,7 @@ export async function command(params: {
     const SPACE_PLACEHOLDER = "SPACE_PLACEHOLDER_xKLmdPd";
 
     const dockerRunArgs: string[] = [
-        `-p${SPACE_PLACEHOLDER}${port}:8080`,
+        `-p${SPACE_PLACEHOLDER}${port}:${containerPort}`,
         `--name${SPACE_PLACEHOLDER}${CONTAINER_NAME}`,
         ...(keycloakMajorVersionNumber >= 26
             ? [

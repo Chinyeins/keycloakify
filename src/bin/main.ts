@@ -80,6 +80,7 @@ program
 program
     .command<{
         port: number | undefined;
+        containerPort: number | undefined;
         keycloakVersion: string | number | undefined;
         realmJsonFilePath: string | undefined;
     }>({
@@ -97,6 +98,21 @@ program
             return name;
         })(),
         description: ["Keycloak server port.", "Example `--port 8085`"].join(" "),
+        defaultValue: undefined
+    })
+    .option({
+        key: "containerPort",
+        name: (() => {
+            const name = "containerPort";
+
+            optionsKeys.push(name);
+
+            return name;
+        })(),
+        description: [
+            "Docker container internal port mappingm",
+            "Example --containerPort 8085"
+        ].join(" "),
         defaultValue: undefined
     })
     .option({
@@ -131,7 +147,13 @@ program
     })
     .task({
         skip,
-        handler: async ({ projectDirPath, keycloakVersion, port, realmJsonFilePath }) => {
+        handler: async ({
+            projectDirPath,
+            keycloakVersion,
+            port,
+            realmJsonFilePath,
+            containerPort
+        }) => {
             const { command } = await import("./start-keycloak");
 
             await command({
@@ -140,7 +162,8 @@ program
                     keycloakVersion:
                         keycloakVersion === undefined ? undefined : `${keycloakVersion}`,
                     port,
-                    realmJsonFilePath
+                    realmJsonFilePath,
+                    containerPort: containerPort
                 }
             });
         }
